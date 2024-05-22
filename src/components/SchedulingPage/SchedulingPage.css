@@ -1,0 +1,6 @@
+.main-container {
+    display: flex;
+    justify-content: center;
+}
+
+/* flex justify-center items-center min-h-screen */
