@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import './HomePage.css';
-import logo from '../../utils/azzurroLogo.jpg';
+import logo from '../../utils/azzurroLogo.png';
 import videoBg from '../../utils/homeVideo.mp4';
 
 const HomePage = function HomePage() {
