@@ -1,7 +1,6 @@
-import { Routes, Route } from 'react-router-dom';
-
-import HomePage from './components/HomePage/HomePage';
-import SchedulingPage from './components/SchedulingPage/SchedulingPage';
+import { Routes, Route } from "react-router-dom";
+import HomePage from "./components/HomePage/HomePage";
+import SchedulingPage from "./components/SchedulingPage/SchedulingPage";
 
 function App() {
   return (
