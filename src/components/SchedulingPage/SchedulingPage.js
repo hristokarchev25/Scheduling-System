@@ -70,7 +70,7 @@ const SchedulingPage = () => {
       {events && (
         <ScheduleComponent
           height={"100%"}
-          selectedDate={new Date(2024, 4, 22)}
+          selectedDate={new Date()}
           eventSettings={{ dataSource: events }}
           actionComplete={(e) => {
             if (e.requestType === "eventCreated") {
