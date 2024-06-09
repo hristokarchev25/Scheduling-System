@@ -1,6 +1,5 @@
 .main-container {
-    display: flex;
-    justify-content: center;
+  height: 100vh;
 }
 
 /* flex justify-center items-center min-h-screen */

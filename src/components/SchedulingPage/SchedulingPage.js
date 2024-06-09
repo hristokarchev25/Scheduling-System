@@ -4,8 +4,10 @@ import {
   Week,
   Month,
   Inject,
+  Аgenda,
+  Agenda,
 } from "@syncfusion/ej2-react-schedule";
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { registerLicense } from "@syncfusion/ej2-base";
 import "./SchedulingPage.css";
 import { getDatabase, ref, set, push, get } from "firebase/database";
@@ -15,15 +17,21 @@ registerLicense(
   "Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVF3WmFZfVpgfF9DYVZUQWYuP1ZhSXxXdkBhW39WdXVQQGFfV0A="
 );
 
-const SchedulingPage = function SchedulingPage() {
-  const [events, setEvents] = useState(null);
+const SchedulingPage = () => {
   const db = getDatabase(app);
+  const [events, setEvents] = useState([]);
 
   const addNewEvent = async (data) => {
     try {
-      console.log("Adding new event:", data); // Log new event data
-      data?.forEach((event) => {
-        set(push(ref(db, "events")), event);
+      data.forEach((element) => {
+        console.log(element);
+        const newEventRef = push(ref(db, "events"));
+        set(newEventRef, {
+          Subject: element.Subject,
+          StartTime: new Date(element.StartTime).getTime(),
+          EndTime: new Date(element.EndTime).getTime(),
+          IsAllDay: element.IsAllDay,
+        });
       });
     } catch (error) {
       console.error("Error adding new event:", error);
@@ -34,18 +42,18 @@ const SchedulingPage = function SchedulingPage() {
     const fetchData = async () => {
       try {
         const snapshot = await get(ref(db, "events"));
-        if (snapshot.exists()) {
-          console.log("Data fetched successfully:", snapshot.val());
-          const data = snapshot.val();
-          const keys = Object.keys(data);
-          const values = Object.values(data);
-
-          const events = keys.map((key, index) => {
-            return { ...values[index], Id: key };
+        const data = snapshot.val();
+        const newEvents = [];
+        for (let key in data) {
+          newEvents.push({
+            Id: key,
+            Subject: data[key].Subject,
+            StartTime: new Date(data[key].StartTime),
+            EndTime: new Date(data[key].EndTime),
+            IsAllDay: data[key].IsAllDay,
           });
-
-          setEvents(events);
         }
+        setEvents(newEvents);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -55,24 +63,25 @@ const SchedulingPage = function SchedulingPage() {
 
   if (!events) {
     console.log("Loading data...");
-    return <div>Loading...</div>; // Or some loading spinner
+    return <div>Loading...</div>;
   }
 
-  console.log(events);
-
   return (
-    <main className="" style={{ height: "100%" }}>
-      <ScheduleComponent
-        selectedDate={new Date(2024, 4, 22)}
-        eventSettings={{ dataSource: events }}
-        actionComplete={(e) => {
-          if (e.requestType === "eventCreated") {
-            addNewEvent(e.data);
-          }
-        }}
-      >
-        <Inject services={[Day, Week, Month]} />
-      </ScheduleComponent>
+    <main className="main-container">
+      {events && (
+        <ScheduleComponent
+          selectedDate={new Date(2024, 4, 22)}
+          eventSettings={{ dataSource: events }}
+          actionComplete={(e) => {
+            if (e.requestType === "eventCreated") {
+              addNewEvent(e.data);
+            }
+          }}
+          currentView="Month"
+        >
+          <Inject services={[Day, Week, Month, Agenda]} />
+        </ScheduleComponent>
+      )}
     </main>
   );
 };
