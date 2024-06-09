@@ -24,7 +24,6 @@ const SchedulingPage = () => {
   const addNewEvent = async (data) => {
     try {
       data.forEach((element) => {
-        console.log(element);
         const newEventRef = push(ref(db, "events"));
         set(newEventRef, {
           Subject: element.Subject,
