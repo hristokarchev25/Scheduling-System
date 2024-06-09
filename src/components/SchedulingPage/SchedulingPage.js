@@ -69,6 +69,7 @@ const SchedulingPage = () => {
     <main className="main-container">
       {events && (
         <ScheduleComponent
+          height={"100%"}
           selectedDate={new Date(2024, 4, 22)}
           eventSettings={{ dataSource: events }}
           actionComplete={(e) => {
