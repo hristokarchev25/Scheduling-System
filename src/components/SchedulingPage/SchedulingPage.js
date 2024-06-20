@@ -10,7 +10,7 @@ import {
 import React, { useEffect, useState } from "react";
 import { registerLicense } from "@syncfusion/ej2-base";
 import "./SchedulingPage.css";
-import { getDatabase, ref, set, push, get } from "firebase/database";
+import { getDatabase, ref, set, push, get, remove } from "firebase/database";
 import app from "../../firebaseConfig";
 
 registerLicense(
@@ -20,6 +20,29 @@ registerLicense(
 const SchedulingPage = () => {
   const db = getDatabase(app);
   const [events, setEvents] = useState([]);
+
+  const deleteFunction = async (idParam) => {
+    const db = getDatabase(app);
+    const dbRef = ref(db, "events" + idParam);
+    await remove(dbRef);
+    console.log('great success');
+  };
+
+  const sayHiFunc = async () => {
+    console.log("great success");
+    console.log(events);
+  }
+
+  const popupOpenHandler = (args) => {
+
+    if (args.type === 'QuickInfo') {
+      const deleteBtn = document.getElementById("QuickDialog");
+      deleteBtn.onclick = function () {
+        sayHiFunc();
+        //deleteFunction()
+      };
+    }
+  };
 
   const addNewEvent = async (data) => {
     try {
@@ -71,13 +94,14 @@ const SchedulingPage = () => {
         <ScheduleComponent
           height={"100%"}
           selectedDate={new Date()}
-          eventSettings={{ dataSource: events }}
+          eventSettings={{ dataSource: events, allowEditing: false }}
           actionComplete={(e) => {
             if (e.requestType === "eventCreated") {
               addNewEvent(e.data);
             }
           }}
           currentView="Month"
+          popupOpen={popupOpenHandler}
         >
           <Inject services={[Day, Week, Month, Agenda]} />
         </ScheduleComponent>
