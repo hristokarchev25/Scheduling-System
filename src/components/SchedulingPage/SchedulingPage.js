@@ -8,39 +8,46 @@ import {
   Agenda,
 } from "@syncfusion/ej2-react-schedule";
 import React, { useEffect, useState } from "react";
-import { registerLicense } from "@syncfusion/ej2-base";
+import { registerLicense, validateLicense } from "@syncfusion/ej2-base";
 import "./SchedulingPage.css";
 import { getDatabase, ref, set, push, get, remove } from "firebase/database";
 import app from "../../firebaseConfig";
 
 registerLicense(
-  "Ngo9BigBOggjHTQxAR8/V1NBaF1cXmhPYVF3WmFZfVpgfF9DYVZUQWYuP1ZhSXxXdkBhW39WdXVQQGFfV0A="
+  "Ngo9BigBOggjHTQxAR8/V1NCaF5cXmZCeUx0QXxbf1x0ZFxMYVpbRHJPMyBoS35RckVlW3teeXFURGZfUkJ+"
+);
+
+validateLicense(
+  "Ngo9BigBOggjHTQxAR8/V1NBaF1cWmhIfEx1RHxQdld5ZFRHallYTnNWUj0eQnxTdEFjX31WcHxQRGFZV0J1WA=="
 );
 
 const SchedulingPage = () => {
   const db = getDatabase(app);
   const [events, setEvents] = useState([]);
+  const [num, setNum] = useState("");
 
   const deleteFunction = async (idParam) => {
     const db = getDatabase(app);
-    const dbRef = ref(db, "events" + idParam);
+    const dbRef = ref(db, "events/" + events[0].Id);
     await remove(dbRef);
     console.log('great success');
   };
 
   const sayHiFunc = async () => {
     console.log("great success");
-    console.log(events);
+    console.log(events[0].Id);
   }
 
   const popupOpenHandler = (args) => {
 
     if (args.type === 'QuickInfo') {
+      //const deleteBtn = args.element.querySelector(".e-popup-footer .e-event-delete");
       const deleteBtn = document.getElementById("QuickDialog");
       deleteBtn.onclick = function () {
         sayHiFunc();
-        //deleteFunction()
+        /* deleteFunction(); */
       };
+
     }
   };
 
