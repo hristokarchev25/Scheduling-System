@@ -4,7 +4,6 @@ import {
   Week,
   Month,
   Inject,
-  Аgenda,
   Agenda,
 } from "@syncfusion/ej2-react-schedule";
 import React, { useEffect, useState } from "react";
@@ -24,54 +23,6 @@ validateLicense(
 const SchedulingPage = () => {
   const db = getDatabase(app);
   const [events, setEvents] = useState([]);
-  const [eventId, setEventId] = useState("");
-
-  const onEventClick = (args) => {
-    setEventId(args.event.Id);
-    console.log(args.event.Id);
-    console.log(eventId);
-  };
-
-  const deleteFunction = async (idParam) => {
-    const db = getDatabase(app);
-    const dbRef = ref(db, "events/" + idParam);
-    await remove(dbRef);
-    console.log('great success');
-  };
-
-  /* const sayHiFunc = async () => {
-    console.log("great success");
-    console.log(events[0].Id);
-  } */
-
-  const popupOpenHandler = (args) => {
-
-    if (args.type === 'QuickInfo') {
-      //const deleteBtn = args.element.querySelector(".e-popup-footer .e-event-delete");
-      const deleteBtn = document.getElementById("QuickDialog");
-      deleteBtn.onclick = function () {
-        //sayHiFunc();
-        deleteFunction(eventId);
-      };
-
-    }
-  };
-
-  const addNewEvent = async (data) => {
-    try {
-      data.forEach((element) => {
-        const newEventRef = push(ref(db, "events"));
-        set(newEventRef, {
-          Subject: element.Subject,
-          StartTime: new Date(element.StartTime).getTime(),
-          EndTime: new Date(element.EndTime).getTime(),
-          IsAllDay: element.IsAllDay,
-        });
-      });
-    } catch (error) {
-      console.error("Error adding new event:", error);
-    }
-  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -101,6 +52,44 @@ const SchedulingPage = () => {
     return <div>Loading...</div>;
   }
 
+  const actionCompleteHandler = async (event) => {
+    switch (event.requestType) {
+      case "eventCreated":
+        handleAddEvent(event.data);
+        break;
+
+      case "eventRemoved":
+        const eventIdToDelete = event.data[0].Id;
+        await handleDeleteEvent(eventIdToDelete);
+        break;
+      default:
+        break;
+    }
+  };
+
+  const handleAddEvent = async (event) => {
+    try {
+      event.forEach((event) => {
+        const newEventRef = push(ref(db, "events"));
+        set(newEventRef, {
+          Subject: event.Subject,
+          StartTime: new Date(event.StartTime).getTime(),
+          EndTime: new Date(event.EndTime).getTime(),
+          IsAllDay: event.IsAllDay,
+        });
+      });
+    } catch (error) {
+      console.error("Error adding new event:", error);
+    }
+  };
+
+  const handleDeleteEvent = async (idParam) => {
+    const db = getDatabase(app);
+    const dbRef = ref(db, "events/" + idParam);
+    await remove(dbRef);
+    console.log("great success");
+  };
+
   return (
     <main className="main-container">
       {events && (
@@ -108,14 +97,8 @@ const SchedulingPage = () => {
           height={"100%"}
           selectedDate={new Date()}
           eventSettings={{ dataSource: events, allowEditing: false }}
-          actionComplete={(e) => {
-            if (e.requestType === "eventCreated") {
-              addNewEvent(e.data);
-            }
-          }}
+          actionComplete={actionCompleteHandler}
           currentView="Month"
-          popupOpen={popupOpenHandler}
-          eventClick={onEventClick}
         >
           <Inject services={[Day, Week, Month, Agenda]} />
         </ScheduleComponent>
