@@ -24,19 +24,25 @@ validateLicense(
 const SchedulingPage = () => {
   const db = getDatabase(app);
   const [events, setEvents] = useState([]);
-  const [num, setNum] = useState("");
+  const [eventId, setEventId] = useState("");
+
+  const onEventClick = (args) => {
+    setEventId(args.event.Id);
+    console.log(args.event.Id);
+    console.log(eventId);
+  };
 
   const deleteFunction = async (idParam) => {
     const db = getDatabase(app);
-    const dbRef = ref(db, "events/" + events[0].Id);
+    const dbRef = ref(db, "events/" + idParam);
     await remove(dbRef);
     console.log('great success');
   };
 
-  const sayHiFunc = async () => {
+  /* const sayHiFunc = async () => {
     console.log("great success");
     console.log(events[0].Id);
-  }
+  } */
 
   const popupOpenHandler = (args) => {
 
@@ -44,8 +50,8 @@ const SchedulingPage = () => {
       //const deleteBtn = args.element.querySelector(".e-popup-footer .e-event-delete");
       const deleteBtn = document.getElementById("QuickDialog");
       deleteBtn.onclick = function () {
-        sayHiFunc();
-        /* deleteFunction(); */
+        //sayHiFunc();
+        deleteFunction(eventId);
       };
 
     }
@@ -109,6 +115,7 @@ const SchedulingPage = () => {
           }}
           currentView="Month"
           popupOpen={popupOpenHandler}
+          eventClick={onEventClick}
         >
           <Inject services={[Day, Week, Month, Agenda]} />
         </ScheduleComponent>
